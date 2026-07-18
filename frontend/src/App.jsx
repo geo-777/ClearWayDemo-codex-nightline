@@ -10,12 +10,15 @@ function App() {
   const [ambulanceHeading, setAmbulanceHeading] = useState(null);
   const [vehiclePosition, setVehiclePosition] = useState(null);
   const [alertData, setAlertData] = useState(null);
+  const [triggerRunId, setTriggerRunId] = useState(null);
+
+  const handleRunDemo = () => setTriggerRunId(Date.now());
 
   return (
     <main className="app-shell">
       <header className="top-bar">
         <h1>ClearWay — Ambulance Proximity Live Demo</h1>
-        <RunDemoButton />
+        <RunDemoButton onRunDemo={handleRunDemo} />
       </header>
 
       <section className="map-section" aria-label="Map area">
@@ -28,12 +31,14 @@ function App() {
 
       <section className="simulation-grid" aria-label="Simulation controls">
         <AmbulancePanel
+          triggerRunId={triggerRunId}
           onPositionUpdate={(position, heading) => {
             setAmbulancePosition(position);
             setAmbulanceHeading(heading);
           }}
         />
         <VehiclePanel
+          triggerRunId={triggerRunId}
           onPositionUpdate={setVehiclePosition}
           onAlertUpdate={setAlertData}
         />

@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { postVehicleLocation } from '../api/client.js';
 import { ROUTE_SETS } from '../data/testRoutes.js';
 import useSimulation from '../hooks/useSimulation.js';
 import AlertBanner from './AlertBanner.jsx';
 
-function VehiclePanel({ onPositionUpdate, onAlertUpdate }) {
+function VehiclePanel({ onPositionUpdate, onAlertUpdate, triggerRunId }) {
   const [vehicleId, setVehicleId] = useState('VEH-01');
   const [selectedRoute, setSelectedRoute] = useState('converging');
   const [alertData, setAlertData] = useState(null);
   const [rawResponse, setRawResponse] = useState('No data yet');
+  const [pendingDemoRun, setPendingDemoRun] = useState(false);
+  const lastTriggerRunId = useRef(null);
   const route = ROUTE_SETS[selectedRoute].vehicle;
 
   const { isRunning, start, stop } = useSimulation(
@@ -33,6 +35,27 @@ function VehiclePanel({ onPositionUpdate, onAlertUpdate }) {
       }
     },
   );
+
+  useEffect(() => {
+    if (triggerRunId == null || triggerRunId === lastTriggerRunId.current) {
+      return;
+    }
+
+    lastTriggerRunId.current = triggerRunId;
+
+    if (!isRunning) {
+      setVehicleId('VEH-01');
+      setSelectedRoute('converging');
+      setPendingDemoRun(true);
+    }
+  }, [triggerRunId]);
+
+  useEffect(() => {
+    if (pendingDemoRun && selectedRoute === 'converging' && !isRunning) {
+      start();
+      setPendingDemoRun(false);
+    }
+  }, [isRunning, pendingDemoRun, selectedRoute, start]);
 
   return (
     <article className="simulation-panel vehicle-panel">

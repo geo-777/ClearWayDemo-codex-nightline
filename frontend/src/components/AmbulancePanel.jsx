@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { postAmbulanceLocation, postAmbulanceStop } from '../api/client.js';
 import { ROUTE_SETS } from '../data/testRoutes.js';
 import useSimulation from '../hooks/useSimulation.js';
@@ -21,11 +21,13 @@ function distanceBetween(start, end) {
   return EARTH_RADIUS_METERS * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function AmbulancePanel({ onPositionUpdate }) {
+function AmbulancePanel({ onPositionUpdate, triggerRunId }) {
   const [ambulanceId, setAmbulanceId] = useState('AMB-01');
   const [selectedRoute, setSelectedRoute] = useState('converging');
   const [speed, setSpeed] = useState(null);
   const [lastResponse, setLastResponse] = useState('—');
+  const [pendingDemoRun, setPendingDemoRun] = useState(false);
+  const lastTriggerRunId = useRef(null);
   const route = ROUTE_SETS[selectedRoute].ambulance;
 
   const { isRunning, start, stop, currentIndex, currentPosition, currentHeading } = useSimulation(
@@ -51,6 +53,27 @@ function AmbulancePanel({ onPositionUpdate }) {
       }
     },
   );
+
+  useEffect(() => {
+    if (triggerRunId == null || triggerRunId === lastTriggerRunId.current) {
+      return;
+    }
+
+    lastTriggerRunId.current = triggerRunId;
+
+    if (!isRunning) {
+      setAmbulanceId('AMB-01');
+      setSelectedRoute('converging');
+      setPendingDemoRun(true);
+    }
+  }, [triggerRunId]);
+
+  useEffect(() => {
+    if (pendingDemoRun && selectedRoute === 'converging' && !isRunning) {
+      start();
+      setPendingDemoRun(false);
+    }
+  }, [isRunning, pendingDemoRun, selectedRoute, start]);
 
   async function handleStop() {
     stop();
