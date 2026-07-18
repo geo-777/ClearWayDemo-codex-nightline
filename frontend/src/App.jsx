@@ -5,6 +5,13 @@ import AmbulancePanel from "./components/AmbulancePanel.jsx";
 import VehiclePanel from "./components/VehiclePanel.jsx";
 import "./styles/App.css";
 
+const ROUTE_LABELS = {
+  converging: "Converging",
+  diverging: "Diverging",
+  stationary: "Stationary",
+  sameDirection: "Overtake",
+};
+
 function App() {
   const [ambulancePosition, setAmbulancePosition] = useState(null);
   const [ambulanceHeading, setAmbulanceHeading] = useState(null);
@@ -27,8 +34,23 @@ function App() {
   return (
     <main className="app-shell">
       <header className="top-bar">
-        <h1>ClearWay System — Live Demo</h1>
+        <div className="brand-lockup">
+          <div className="brand-mark" aria-hidden="true">
+            <img src="/clearway-logo.svg" alt="" />
+          </div>
+          <div>
+            <p className="brand-kicker">Every Second Matters</p>{" "}
+            <h1>
+              ClearWay System <span>Live Demo</span>
+            </h1>
+          </div>
+        </div>
+
         <div className="top-bar-controls">
+          <div className={`system-state ${isDemoRunning ? "is-live" : ""}`}>
+            <span className="system-state-dot" />
+            {isDemoRunning ? "Simulation live" : "System ready"}
+          </div>
           <label className="scenario-control" htmlFor="demo-route">
             <span>Scenario</span>
             <select
@@ -40,7 +62,7 @@ function App() {
               <option value="converging">Converging Route</option>
               <option value="diverging">Diverging Route</option>
               <option value="stationary">Stationary Route</option>
-              <option value="sameDirection">Same Direction — Overtake</option>
+              <option value="sameDirection">Same Direction - Overtake</option>
             </select>
           </label>
           <RunDemoButton
@@ -52,6 +74,13 @@ function App() {
 
       <section className="dashboard-layout" aria-label="Live demo dashboard">
         <aside className="controls-column" aria-label="Simulation status">
+          <div className="controls-heading">
+            <div>
+              <p className="section-kicker">Operations console</p>
+              <h2>Live telemetry</h2>
+            </div>
+            <span className="route-chip">{ROUTE_LABELS[selectedRoute]}</span>
+          </div>
           <AmbulancePanel
             selectedRoute={selectedRoute}
             simulationCommand={simulationCommand}
@@ -74,6 +103,14 @@ function App() {
             vehiclePosition={vehiclePosition}
             alertData={alertData}
           />
+          <div className="map-hud map-hud-live" aria-hidden="true">
+            <span className="map-hud-dot" />
+            Live location feed
+          </div>
+          <div className="map-hud map-hud-radius" aria-hidden="true">
+            <strong>300m</strong>
+            <span>alert radius</span>
+          </div>
         </section>
       </section>
     </main>
