@@ -22,6 +22,10 @@ function detectAlert(vehicle, activeAmbulances, config) {
       vehicle.lng,
     );
 
+    if (distance <= 0.01) {
+      continue;
+    }
+
     if (distance > config.PROXIMITY_THRESHOLD_METERS) {
       continue;
     }

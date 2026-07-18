@@ -25,6 +25,7 @@ function AmbulancePanel({ onPositionUpdate, selectedRoute, simulationCommand }) 
   const [speed, setSpeed] = useState(null);
   const [lastResponse, setLastResponse] = useState('—');
   const lastCommandId = useRef(null);
+  const stopRequestRef = useRef(Promise.resolve());
   const ambulanceId = 'AMB-01';
   const route = ROUTE_SETS[selectedRoute].ambulance;
 
@@ -60,14 +61,16 @@ function AmbulancePanel({ onPositionUpdate, selectedRoute, simulationCommand }) 
     lastCommandId.current = simulationCommand.id;
 
     if (simulationCommand.action === 'start' && !isRunning) {
-      start();
+      stopRequestRef.current.then(() => start());
     }
 
     if (simulationCommand.action === 'stop' && isRunning) {
       stop();
-      postAmbulanceStop({ ambulanceId })
+      stopRequestRef.current = postAmbulanceStop({ ambulanceId })
         .then((response) => setLastResponse(response.status || 'stopped'))
-        .catch((error) => setLastResponse(error.message));
+        .catch((error) => {
+          setLastResponse(error.message);
+        });
     }
   }, [simulationCommand]);
 

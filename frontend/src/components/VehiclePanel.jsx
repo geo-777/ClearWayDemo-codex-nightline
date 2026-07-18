@@ -45,8 +45,13 @@ function VehiclePanel({ onPositionUpdate, onAlertUpdate, selectedRoute, simulati
       start();
     }
 
-    if (simulationCommand.action === 'stop' && isRunning) {
-      stop();
+    if (simulationCommand.action === 'stop') {
+      if (isRunning) {
+        stop();
+      }
+      setAlertData(null);
+      onAlertUpdate?.(null);
+      setRawResponse('No data yet');
     }
   }, [simulationCommand]);
 
