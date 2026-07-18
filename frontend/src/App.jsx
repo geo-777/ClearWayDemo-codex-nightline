@@ -18,6 +18,10 @@ function App() {
     const action = isDemoRunning ? 'stop' : 'start';
     setSimulationCommand({ id: Date.now(), action });
     setIsDemoRunning(action === 'start');
+
+    if (action === 'stop') {
+      setAlertData(null);
+    }
   }
 
   return (

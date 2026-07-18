@@ -1,6 +1,6 @@
 const SEVERITY_STYLES = {
-  high: { backgroundColor: '#b91c1c', color: '#ffffff', borderColor: '#7f1d1d' },
-  medium: { backgroundColor: '#c2410c', color: '#ffffff', borderColor: '#9a3412' },
+  high: { backgroundColor: '#b91c1c', color: '#eeeeee', borderColor: '#7f1d1d' },
+  medium: { backgroundColor: '#c2410c', color: '#eeeeee', borderColor: '#9a3412' },
   low: { backgroundColor: '#facc15', color: '#3b2f00', borderColor: '#ca8a04' },
 };
 
