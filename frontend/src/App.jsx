@@ -1,3 +1,4 @@
+import { useState } from "react";
 import RunDemoButton from "./components/RunDemoButton.jsx";
 import MapView from "./components/MapView.jsx";
 import AmbulancePanel from "./components/AmbulancePanel.jsx";
@@ -5,6 +6,11 @@ import VehiclePanel from "./components/VehiclePanel.jsx";
 import "./styles/App.css";
 
 function App() {
+  const [ambulancePosition, setAmbulancePosition] = useState(null);
+  const [ambulanceHeading, setAmbulanceHeading] = useState(null);
+  const [vehiclePosition, setVehiclePosition] = useState(null);
+  const [alertData, setAlertData] = useState(null);
+
   return (
     <main className="app-shell">
       <header className="top-bar">
@@ -13,12 +19,24 @@ function App() {
       </header>
 
       <section className="map-section" aria-label="Map area">
-        <MapView />
+        <MapView
+          ambulancePosition={ambulancePosition}
+          vehiclePosition={vehiclePosition}
+          alertData={alertData}
+        />
       </section>
 
       <section className="simulation-grid" aria-label="Simulation controls">
-        <AmbulancePanel />
-        <VehiclePanel />
+        <AmbulancePanel
+          onPositionUpdate={(position, heading) => {
+            setAmbulancePosition(position);
+            setAmbulanceHeading(heading);
+          }}
+        />
+        <VehiclePanel
+          onPositionUpdate={setVehiclePosition}
+          onAlertUpdate={setAlertData}
+        />
       </section>
     </main>
   );
