@@ -1,0 +1,17 @@
+{
+  "name": "ambulance-proximity-frontend",
+  "private": true,
+  "description": "Vite and React dependency manifest for the ambulance proximity dashboard.",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.14"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "ambulance-proximity-backend",
+  "private": true,
+  "description": "Backend dependency manifest for the ambulance proximity MVP.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
