@@ -1,9 +1,11 @@
 {
-  "name": "ambulance-proximity-frontend",
+  "name": "clearway",
   "private": true,
-  "description": "Vite and React dependency manifest for the ambulance proximity dashboard.",
+  "description": "ClearWay frontend dashboard for ambulance proximity monitoring.",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
@@ -12,6 +14,7 @@
     "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
     "vite": "^5.4.14"
   }
 }

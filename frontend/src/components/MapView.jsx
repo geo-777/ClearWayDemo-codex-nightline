@@ -1,1 +1,5 @@
-// Leaflet map component placeholder for showing ambulance and vehicle positions.
+function MapView() {
+  return <div className="map-placeholder">Map will render here</div>;
+}
+
+export default MapView;

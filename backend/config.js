@@ -1,6 +1,6 @@
 module.exports = {
   // Maximum ambulance-to-vehicle distance that can qualify for an alert.
-  PROXIMITY_THRESHOLD_METERS: 300,
+  PROXIMITY_THRESHOLD_METERS: 500,
   // Maximum age of an ambulance location update before it is treated as stale.
   STALE_THRESHOLD_MS: 5000,
   // Maximum heading difference for an ambulance to be considered moving toward a vehicle.
