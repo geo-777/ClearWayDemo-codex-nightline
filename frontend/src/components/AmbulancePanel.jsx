@@ -21,13 +21,11 @@ function distanceBetween(start, end) {
   return EARTH_RADIUS_METERS * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function AmbulancePanel({ onPositionUpdate, triggerRunId }) {
-  const [ambulanceId, setAmbulanceId] = useState('AMB-01');
-  const [selectedRoute, setSelectedRoute] = useState('converging');
+function AmbulancePanel({ onPositionUpdate, selectedRoute, simulationCommand }) {
   const [speed, setSpeed] = useState(null);
   const [lastResponse, setLastResponse] = useState('—');
-  const [pendingDemoRun, setPendingDemoRun] = useState(false);
-  const lastTriggerRunId = useRef(null);
+  const lastCommandId = useRef(null);
+  const ambulanceId = 'AMB-01';
   const route = ROUTE_SETS[selectedRoute].ambulance;
 
   const { isRunning, start, stop, currentIndex, currentPosition, currentHeading } = useSimulation(
@@ -55,75 +53,39 @@ function AmbulancePanel({ onPositionUpdate, triggerRunId }) {
   );
 
   useEffect(() => {
-    if (triggerRunId == null || triggerRunId === lastTriggerRunId.current) {
+    if (!simulationCommand || simulationCommand.id === lastCommandId.current) {
       return;
     }
 
-    lastTriggerRunId.current = triggerRunId;
+    lastCommandId.current = simulationCommand.id;
 
-    if (!isRunning) {
-      setAmbulanceId('AMB-01');
-      setSelectedRoute('converging');
-      setPendingDemoRun(true);
-    }
-  }, [triggerRunId]);
-
-  useEffect(() => {
-    if (pendingDemoRun && selectedRoute === 'converging' && !isRunning) {
+    if (simulationCommand.action === 'start' && !isRunning) {
       start();
-      setPendingDemoRun(false);
     }
-  }, [isRunning, pendingDemoRun, selectedRoute, start]);
 
-  async function handleStop() {
-    stop();
-
-    try {
-      const response = await postAmbulanceStop({ ambulanceId });
-      setLastResponse(response.status || 'stopped');
-    } catch (error) {
-      setLastResponse(error.message);
+    if (simulationCommand.action === 'stop' && isRunning) {
+      stop();
+      postAmbulanceStop({ ambulanceId })
+        .then((response) => setLastResponse(response.status || 'stopped'))
+        .catch((error) => setLastResponse(error.message));
     }
-  }
+  }, [simulationCommand]);
 
   return (
     <article className="simulation-panel ambulance-panel">
-      <h2>🚑 Ambulance Simulation</h2>
-
-      <label className="form-field" htmlFor="ambulance-id">
-        Ambulance ID
-        <input
-          id="ambulance-id"
-          type="text"
-          value={ambulanceId}
-          disabled={isRunning}
-          onChange={(event) => setAmbulanceId(event.target.value)}
-        />
-      </label>
-
-      <label className="form-field" htmlFor="ambulance-route">
-        Route
-        <select
-          id="ambulance-route"
-          value={selectedRoute}
-          disabled={isRunning}
-          onChange={(event) => setSelectedRoute(event.target.value)}
-        >
-          {Object.keys(ROUTE_SETS).map((routeName) => (
-            <option key={routeName} value={routeName}>
-              {routeName.charAt(0).toUpperCase() + routeName.slice(1)} Route
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <div className="button-row">
-        <button type="button" disabled={isRunning} onClick={start}>Start</button>
-        <button className="stop-button" type="button" disabled={!isRunning} onClick={handleStop}>Stop</button>
+      <div className="panel-heading">
+        <img src="/ambulance-marker.svg" alt="" className="panel-icon" />
+        <div>
+          <p className="panel-eyebrow">Emergency unit</p>
+          <h2>Ambulance status</h2>
+        </div>
+        <span className={`live-indicator ${isRunning ? 'is-live' : ''}`}>
+          {isRunning ? 'Live' : 'Idle'}
+        </span>
       </div>
 
       <section className="status-readout" aria-label="Ambulance status">
-        <h3>Status</h3>
+        <p>Unit ID: <strong>{ambulanceId}</strong></p>
         <p>Waypoint: {isRunning ? currentIndex : '—'}</p>
         <p>
           Lat/Lng: {currentPosition && isRunning

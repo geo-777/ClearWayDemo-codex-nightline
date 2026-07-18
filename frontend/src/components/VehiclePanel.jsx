@@ -4,16 +4,14 @@ import { ROUTE_SETS } from '../data/testRoutes.js';
 import useSimulation from '../hooks/useSimulation.js';
 import AlertBanner from './AlertBanner.jsx';
 
-function VehiclePanel({ onPositionUpdate, onAlertUpdate, triggerRunId }) {
-  const [vehicleId, setVehicleId] = useState('VEH-01');
-  const [selectedRoute, setSelectedRoute] = useState('converging');
+function VehiclePanel({ onPositionUpdate, onAlertUpdate, selectedRoute, simulationCommand }) {
   const [alertData, setAlertData] = useState(null);
   const [rawResponse, setRawResponse] = useState('No data yet');
-  const [pendingDemoRun, setPendingDemoRun] = useState(false);
-  const lastTriggerRunId = useRef(null);
+  const lastCommandId = useRef(null);
+  const vehicleId = 'VEH-01';
   const route = ROUTE_SETS[selectedRoute].vehicle;
 
-  const { isRunning, start, stop } = useSimulation(
+  const { isRunning, start, stop, currentIndex, currentPosition, currentHeading } = useSimulation(
     route,
     async (position, heading) => {
       onPositionUpdate?.(position);
@@ -37,61 +35,44 @@ function VehiclePanel({ onPositionUpdate, onAlertUpdate, triggerRunId }) {
   );
 
   useEffect(() => {
-    if (triggerRunId == null || triggerRunId === lastTriggerRunId.current) {
+    if (!simulationCommand || simulationCommand.id === lastCommandId.current) {
       return;
     }
 
-    lastTriggerRunId.current = triggerRunId;
+    lastCommandId.current = simulationCommand.id;
 
-    if (!isRunning) {
-      setVehicleId('VEH-01');
-      setSelectedRoute('converging');
-      setPendingDemoRun(true);
-    }
-  }, [triggerRunId]);
-
-  useEffect(() => {
-    if (pendingDemoRun && selectedRoute === 'converging' && !isRunning) {
+    if (simulationCommand.action === 'start' && !isRunning) {
       start();
-      setPendingDemoRun(false);
     }
-  }, [isRunning, pendingDemoRun, selectedRoute, start]);
+
+    if (simulationCommand.action === 'stop' && isRunning) {
+      stop();
+    }
+  }, [simulationCommand]);
 
   return (
     <article className="simulation-panel vehicle-panel">
-      <h2>🚗 Vehicle Simulation</h2>
-
-      <label className="form-field" htmlFor="vehicle-id">
-        Vehicle ID
-        <input
-          id="vehicle-id"
-          type="text"
-          value={vehicleId}
-          disabled={isRunning}
-          onChange={(event) => setVehicleId(event.target.value)}
-        />
-      </label>
-
-      <label className="form-field" htmlFor="vehicle-route">
-        Route
-        <select
-          id="vehicle-route"
-          value={selectedRoute}
-          disabled={isRunning}
-          onChange={(event) => setSelectedRoute(event.target.value)}
-        >
-          {Object.keys(ROUTE_SETS).map((routeName) => (
-            <option key={routeName} value={routeName}>
-              {routeName.charAt(0).toUpperCase() + routeName.slice(1)} Route
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <div className="button-row">
-        <button type="button" disabled={isRunning} onClick={start}>Start</button>
-        <button className="stop-button" type="button" disabled={!isRunning} onClick={stop}>Stop</button>
+      <div className="panel-heading">
+        <img src="/vehicle-marker.svg" alt="" className="panel-icon" />
+        <div>
+          <p className="panel-eyebrow">Driver view</p>
+          <h2>Vehicle status</h2>
+        </div>
+        <span className={`live-indicator ${isRunning ? 'is-live' : ''}`}>
+          {isRunning ? 'Live' : 'Idle'}
+        </span>
       </div>
+
+      <section className="status-readout vehicle-location" aria-label="Vehicle location status">
+        <p>Vehicle ID: <strong>{vehicleId}</strong></p>
+        <p>Waypoint: {isRunning ? currentIndex : '—'}</p>
+        <p>
+          Coordinates: {currentPosition && isRunning
+            ? `${currentPosition.lat.toFixed(5)}, ${currentPosition.lng.toFixed(5)}`
+            : '—'}
+        </p>
+        <p>Heading: {currentHeading === null || !isRunning ? '—' : `${Math.round(currentHeading)}°`}</p>
+      </section>
 
       <AlertBanner alertData={alertData} />
 

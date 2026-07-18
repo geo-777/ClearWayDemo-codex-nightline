@@ -1,25 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-
-function RunDemoButton({ onRunDemo }) {
-  const [isStarting, setIsStarting] = useState(false);
-  const timeoutRef = useRef(null);
-
-  useEffect(() => () => clearTimeout(timeoutRef.current), []);
-
-  function handleClick() {
-    onRunDemo?.();
-    setIsStarting(true);
-    timeoutRef.current = setTimeout(() => setIsStarting(false), 1500);
-  }
-
+function RunDemoButton({ isRunning, onToggle }) {
   return (
     <button
-      className="run-demo-button"
+      className={`run-demo-button ${isRunning ? 'is-running' : ''}`}
       type="button"
-      disabled={isStarting}
-      onClick={handleClick}
+      onClick={onToggle}
     >
-      {isStarting ? 'Demo Running...' : '▶ Run Demo'}
+      <span className="button-symbol" aria-hidden="true">{isRunning ? '■' : '▶'}</span>
+      {isRunning ? 'Stop Demo' : 'Run Demo'}
     </button>
   );
 }

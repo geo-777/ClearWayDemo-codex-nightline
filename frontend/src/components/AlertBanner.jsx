@@ -20,19 +20,18 @@ function AlertBanner({ alertData }) {
         }
       `}</style>
       <section
-        className="alert-banner"
+        className="alert-banner active-alert"
         style={{
           ...severityStyle,
           border: `2px solid ${severityStyle.borderColor}`,
-          fontSize: '1.05rem',
-          fontWeight: 600,
           animation: severity === 'high' ? 'alert-banner-pulse 1.1s ease-in-out infinite' : 'none',
         }}
         aria-live="assertive"
       >
-        <strong>🚨 Ambulance {alertData.ambulanceId} approaching!</strong>
-        <div style={{ marginTop: '0.35rem', fontSize: '0.95rem' }}>
-          Distance: {alertData.distance}m · ETA: {alertData.eta}s · Severity: {severity.toUpperCase()}
+        <img src="/ambulance-marker.svg" alt="" className="alert-icon" />
+        <div>
+          <strong>Ambulance {alertData.ambulanceId} approaching</strong>
+          <p>Distance: {alertData.distance}m · ETA: {alertData.eta}s · Severity: {severity.toUpperCase()}</p>
         </div>
       </section>
     </>
