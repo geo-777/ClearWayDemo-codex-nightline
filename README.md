@@ -49,6 +49,71 @@ The backend performs the calculations and determines which vehicles should recei
 
 ---
 
+# How It Works
+
+ClearWay is organized as a simple end-to-end demo that mimics how connected vehicles could receive early warning alerts from emergency services.
+
+## 1. Frontend simulation loop
+
+The demo starts with a selected scenario such as a converging route, a diverging route, or a stationary route. Each scenario contains a predefined list of latitude and longitude waypoints for both the ambulance and the vehicle.
+
+On the frontend, the simulation hook advances through those waypoints once per second. At each tick, it:
+
+- reads the current waypoint and the next waypoint,
+- computes a heading from the current location to the next one,
+- updates the visible position of the simulated vehicle or ambulance,
+- sends the latest location data to the backend.
+
+This creates the effect of a moving emergency unit and a moving vehicle in near real time.
+
+## 2. Data exchange between the UI and the server
+
+The ambulance panel and vehicle panel each send position updates to the backend through the API client. The ambulance sends:
+
+- its identifier,
+- current latitude and longitude,
+- its estimated speed,
+- its current heading.
+
+The vehicle sends:
+
+- its identifier,
+- current latitude and longitude,
+- its current heading.
+
+These updates are posted to Express routes such as `/ambulance/location` and `/vehicle/location`.
+
+## 3. Backend state management
+
+Once the backend receives data, it stores the latest known state in memory. The in-memory store keeps track of active ambulances and the latest vehicle positions. When a vehicle update arrives, the backend retrieves the current list of active ambulances and evaluates whether any of them should trigger an alert.
+
+## 4. Alert detection and calculation logic
+
+The alert calculation happens in the detection module. For every active ambulance, the backend checks whether the update is still fresh enough to be considered relevant. It ignores ambulance updates that are older than a short time threshold, because stale data would produce unreliable alerts.
+
+The backend then performs a series of checks:
+
+- it calculates the real-world distance between the ambulance and the vehicle using the haversine formula,
+- it rejects ambulances that are farther than the configured proximity threshold,
+- it checks whether the ambulance is moving fast enough to be considered an active emergency response unit,
+- it compares the ambulance's heading with the direction from the ambulance to the vehicle to see whether it is actually approaching that vehicle.
+
+If the ambulance passes those checks, the backend estimates the time to arrival by dividing the distance by the ambulance speed. That value becomes the ETA. The alert severity is then assigned based on the ETA:
+
+- a short ETA means a high-severity alert,
+- a medium ETA means a medium-severity alert,
+- a longer ETA means a low-severity alert.
+
+The backend selects the most urgent matching ambulance and returns an alert response containing the alert status, distance, ETA, and severity.
+
+## 5. Visualization in the frontend
+
+The frontend uses the alert response to update the live dashboard. The map shows the ambulance and vehicle markers, while a circle around the vehicle indicates the warning zone. The circle changes color depending on the alert severity so the user can quickly understand how urgent the situation is.
+
+In short, the project simulates a full warning flow: route-based movement on the frontend, location updates over HTTP, backend filtering and geometry-based calculations, and a visual alert shown to the driver.
+
+---
+
 # Features Implemented
 
 ### Backend
