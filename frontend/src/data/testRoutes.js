@@ -128,6 +128,51 @@ export const stationaryVehicleRoute = [
   { lat: 11.258844, lng: 75.769179 },
 ];
 
+export const sameDirectionAmbulanceRoute = [
+  { lat: 11.257, lng: 75.768802 },
+  { lat: 11.2573, lng: 75.768802 },
+  { lat: 11.2576, lng: 75.768802 },
+  { lat: 11.2579, lng: 75.768802 },
+  { lat: 11.2582, lng: 75.768802 },
+  { lat: 11.2585, lng: 75.768802 },
+  { lat: 11.2588, lng: 75.768802 },
+  { lat: 11.2591, lng: 75.768802 },
+  { lat: 11.2594, lng: 75.768802 },
+  { lat: 11.2597, lng: 75.768802 },
+  { lat: 11.26, lng: 75.768802 },
+  { lat: 11.2603, lng: 75.768802 },
+  { lat: 11.2606, lng: 75.768802 },
+  { lat: 11.2609, lng: 75.768802 },
+  { lat: 11.2612, lng: 75.768802 },
+  { lat: 11.2615, lng: 75.768802 },
+  { lat: 11.2618, lng: 75.768802 },
+  { lat: 11.2621, lng: 75.768802 },
+  { lat: 11.2624, lng: 75.768802 },
+  { lat: 11.2627, lng: 75.768802 },
+];
+
+export const sameDirectionVehicleRoute = [
+  { lat: 11.2598, lng: 75.768802 },
+  { lat: 11.25992, lng: 75.768802 },
+  { lat: 11.26004, lng: 75.768802 },
+  { lat: 11.26016, lng: 75.768802 },
+  { lat: 11.26028, lng: 75.768802 },
+  { lat: 11.2604, lng: 75.768802 },
+  { lat: 11.26052, lng: 75.768802 },
+  { lat: 11.26064, lng: 75.768802 },
+  { lat: 11.26076, lng: 75.768802 },
+  { lat: 11.26088, lng: 75.768802 },
+  { lat: 11.261, lng: 75.768802 },
+  { lat: 11.26112, lng: 75.768802 },
+  { lat: 11.26124, lng: 75.768802 },
+  { lat: 11.26136, lng: 75.768802 },
+  { lat: 11.26148, lng: 75.768802 },
+  { lat: 11.2616, lng: 75.768802 },
+  { lat: 11.26172, lng: 75.768802 },
+  { lat: 11.26184, lng: 75.768802 },
+  { lat: 11.26196, lng: 75.768802 },
+  { lat: 11.26208, lng: 75.768802 },
+];
 export const ROUTE_SETS = {
   converging: {
     ambulance: convergingAmbulanceRoute,
@@ -140,5 +185,9 @@ export const ROUTE_SETS = {
   stationary: {
     ambulance: stationaryAmbulanceRoute,
     vehicle: stationaryVehicleRoute,
+  },
+  sameDirection: {
+    ambulance: sameDirectionAmbulanceRoute,
+    vehicle: sameDirectionVehicleRoute,
   },
 };
